@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>My First Dapp</title>
+
+	<!-- <link rel="stylesheet" type="text/css" href="main.css"> -->
+
+	<script type="./BigInteger.min.js"></script>
+
+	<script src="./web3.min.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<h1>Honour NetWork Access Token</h1>
+		<h2 id="instructor">Test HNA token</h2>
+
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+	<script src="./abi.js"></script>
+
+	<script>
+		if (typeof web3 !== 'undefined'){
+			console.log('Web3 found');
+			web3 = new Web3(web3.currentProvider);
+		}else{
+			web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+		}
+
+		web3.eth.defaultAccount = web3.eth.accounts[0];
+		owner = web3.eth.accounts[0];
+		user1 = web3.eth.accounts[1];
+		user2 = web3.eth.accounts[2];
+
+		var HNA = web3.eth.contract(abi);
+		var hna = HNA.at('0x51fc52fd0b30fa0319d97893defe0201fed39c4c');
+		console.log(hna);
+		// hna.startFunding();
+
+
+	</script>
+</body>
+</html>
