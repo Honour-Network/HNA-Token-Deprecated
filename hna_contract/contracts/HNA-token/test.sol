@@ -44,7 +44,7 @@ contract HNATest {
         eventListener(target, true);
     }
 
-    // 计算执行过程中的gas消耗量，并写入log
+    // calculate the used gas in the function, and write into log
     modifier logs_gas() {
         uint startGas = msg.gas;
         _;

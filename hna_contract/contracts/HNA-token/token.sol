@@ -6,20 +6,20 @@ import "./stop.sol";
 
 import "./base.sol";
 
-// HNAToken 智能合约，继承了基本的basetoken合约
+// HNAToken contract, inherited basetoken contract 
 contract HNAToken is HNATokenBase(0), HNAStop {
 
-    // token 符号，例如HNA
+    // token symbol,such as HNA
     bytes32  public  symbol;
-    // token的小数点精度，18
+    // token's decimal precision, 18
     uint256  public  decimals = 18; // standard token precision. override to customize
 
-    // 构造函数，初始化token，给予符号
+    // constructor funciton, initialize token, set symbol
     function HNAToken(bytes32 symbol_) public {
         symbol = symbol_;
     }
 
-    // 两个事件，分别是产生代币和销毁代币
+    // two events, for mint and burn token, respectively
     event Mint(address indexed guy, uint wad);
     event Burn(address indexed guy, uint wad);
 
@@ -28,13 +28,13 @@ contract HNAToken is HNATokenBase(0), HNAStop {
         return super.approve(guy, uint(-1));
     }
 
-    // 给guy地址wad的许可代币量
-    // stoppable==false才可以，否则会抛出异常,如果在执行前先执行了stop方法，stopable会变成true
+    // give guy wad token allowance to transfer
+    // Prerequisites: stoppable==false
     function approve(address guy, uint wad) public stoppable returns (bool) {
         return super.approve(guy, wad);
     }
 
-    // 从src转到dst，转wad的代币，需要许可
+    // transfer from src to dst wad token, needs approve
     function transferFrom(address src, address dst, uint wad) public stoppable returns (bool) {
         if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
             _approvals[src][msg.sender] = safeSub(_approvals[src][msg.sender], wad);
@@ -48,39 +48,39 @@ contract HNAToken is HNATokenBase(0), HNAStop {
         return true;
     }
 
-    // 推送给src代币（即从msg.sender转wad的代币给src）
+    // puch wad token to src (transfer wad token from msg.sender to src)
     function push(address dst, uint wad) public {
         transferFrom(msg.sender, dst, wad);
     }
 
-    // 从src拉取wad的代币到当前账户（即src转给msg.sender）
+    // pull wad token from src to current account(msg.sender) 
     function pull(address src, uint wad) public {
         transferFrom(src, msg.sender, wad);
     }
 
-    // 从src转移wad的代币到dst账户
+    // transfer from src to dst wad token
     function move(address src, address dst, uint wad) public {
         transferFrom(src, dst, wad);
     }
 
-    // 合约调用者产生wad的代币（合约调用者账户增加wad代币，总代币数增加wad）
+    // mint wad token (the balance of caller(msg.sender) increase wad (total token also increase)
     function mint(uint wad) public {
         mint(msg.sender, wad);
     }
 
-    // 合约调用者烧毁wad的代币（合约调用者账户减少wad代币，总代币数减少wad）
+    // burn wad token from msg.sender's account (total token also decrease)
     function burn(uint wad) public {
         burn(msg.sender, wad);
     }
 
-    // 产生wad的代币，给guy，即guy的余额增加wad，同时总代币数增加wad,需要权限
+    // mint wad token, and give it to guy
     function mint(address guy, uint wad) public auth stoppable {
         _balances[guy] = safeAdd(_balances[guy], wad);
         _supply = safeAdd(_supply, wad);
         Mint(guy, wad);
     }
 
-    // 从guy的账户烧毁wad的代币（即guy余额减少wad，总代币数减少wad），需要权限
+    // burn wad token from guy's account
     function burn(address guy, uint wad) public auth stoppable {
         if (guy != msg.sender && _approvals[guy][msg.sender] != uint(-1)) {
             _approvals[guy][msg.sender] = safeSub(_approvals[guy][msg.sender], wad);
@@ -94,7 +94,7 @@ contract HNAToken is HNATokenBase(0), HNAStop {
     // Optional token name
     bytes32 public  name = "";
 
-    // 代币的名称，可以比较长，和HNA可以不一样
+    // token's name, can be a little long
     function setName(bytes32 name_) public auth {
         name = name_;
     }

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.17;
 
-// ERC223接口
+// ERC223 token interface
 contract ERC223 {
     function transfer(address to, uint amount, bytes data) public returns (bool ok);
 

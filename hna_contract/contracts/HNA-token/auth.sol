@@ -6,31 +6,31 @@ contract HNAAuthority {
     function canCall(address src, address dst, bytes4 sig) public view returns (bool);
 }
 
-// 权限管理的事件智能合约
+//Event Contract for Authority
 contract HNAAuthEvents {
     event LogSetAuthority (address indexed authority);
     event LogSetOwner     (address indexed owner);
 }
 
-// 权限管理的智能合约
+// Contract for Authority
 contract HNAAuth is HNAAuthEvents {
     HNAAuthority  public  authority;
-    // 合约创建者（拥有者）
+    // contract creator (owner)
     address      public  owner;
 
-    // 构造函数，合约创建者owner
+    // constructor function, owner
     function HNAAuth() public {
         owner = msg.sender;
         LogSetOwner(msg.sender);
     }
 
-    // 设置新的合约拥有者给owner_
+    // set contract owner_
     function setOwner(address owner_) public auth {
         owner = owner_;
         LogSetOwner(owner);
     }
 
-    // 返回当前的合约拥有者
+    // return current owner
     function getOwner() public view returns (address) {
         return owner;
     }
@@ -40,13 +40,13 @@ contract HNAAuth is HNAAuthEvents {
         LogSetAuthority(authority);
     }
 
-    // 是否有权限，modifier
+    // if have auth，modifier
     modifier auth {
         require(isAuthorized(msg.sender, msg.sig));
         _;
     }
 
-    // 权限管理，智能合约的地址，拥有者，以及自定的canCall函数定义的权限
+    // user defined canCall function fro authority
     function isAuthorized(address src, bytes4 sig) internal view returns (bool) {
         if (src == address(this)) {
             return true;

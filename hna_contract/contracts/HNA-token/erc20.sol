@@ -1,12 +1,12 @@
 /// erc20.sol -- API for the ERC20 token standard
 // See <https://github.com/ethereum/EIPs/issues/20>.
-// ERC20 代币接口
-// totalSupply，返回总的代币金额
-// balanceOf, 返回某个地址的余额
+// ERC20 token interface
+// totalSupply, return total supply of token
+// balanceOf, return the balance of address
 // allowance,
 
 // approve,
-// transfer, 给地址dst转 wad个代币
+// transfer, transfer to user(dst) wad token
 // transferFrom,
 
 pragma solidity ^0.4.8;

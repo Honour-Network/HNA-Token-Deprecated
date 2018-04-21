@@ -5,44 +5,43 @@ pragma solidity ^0.4.17;
 import "./erc20.sol";
 import "./math.sol";
 
-// 把erc20的接口都实现了
+//token based on erc20
 contract HNATokenBase is ERC20, HNAMath {
-    // 发币总量
+    // total supply of token
     uint256                                            _supply;
-    // 每个地址的余额
+    // balance of each address (account)
     mapping (address => uint256)                       _balances;
-    // 地址对地址的许可
+    // approve (address to address)
     mapping (address => mapping (address => uint256))  _approvals;
 
-    // 构造函数, 输入发行总量，全部给合约的创建者
+    // constructor function, inut: totla supply,given to contract creator
     function HNATokenBase(uint supply) public {
         _balances[msg.sender] = supply;
         _supply = supply;
     }
 
-    // 返回发币的总量
+    // return the total supply
     function totalSupply() public view returns (uint) {
         return _supply;
     }
 
-    // 返回地址的余额
+    // return balance of user (address)
     function balanceOf(address src) public view returns (uint) {
         return _balances[src];
     }
 
-    // 返回地址src对地址guy的许可量
+    // return the approve from src to guy
     function allowance(address src, address guy) public view returns (uint) {
         return _approvals[src][guy];
     }
 
-    // 向目标地址dst转wad个代币
+    // tranfer wad token from caller to user(dst)
     function transfer(address dst, uint wad) public returns (bool) {
         return transferFrom(msg.sender, dst, wad);
     }
 
-    // 从第一个人转wad个币到第二个人
+    // tranfer wad token from user(src) to another user(dst), caller needs approve from user(src)
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
-        // 如果第一个人不是合约调用者，从第一个人向合约调用者的许可量减少（如无法减会抛出异常）
         if (src != msg.sender) {
             _approvals[src][msg.sender] = safeSub(_approvals[src][msg.sender], wad);
         }
@@ -55,7 +54,7 @@ contract HNATokenBase is ERC20, HNAMath {
         return true;
     }
 
-    // 调用者给guy一个许可量wad
+    // caller give user(guy) wad allowance
     function approve(address guy, uint wad) public returns (bool) {
         _approvals[msg.sender][guy] = wad;
 

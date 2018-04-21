@@ -9,72 +9,40 @@ import './ERC223.sol';
 
 contract HNA is HNAToken("HNA"), ERC223, Controlled {
 
-    // using HNAMath for uint256; // HNA 必须是library，而非contract 
+    uint256 public currentSupply;           // The number of tokens that can be sold
+    uint256 public tokenRaised = 0;         // The number of tokens have been sold
 
-    // contracts  
-    address public ethFundDeposit;          // ETH存放地址  
-    address public newContractAddr;         // token更新地址  
-
-    bool    public isFunding;                // 状态切换到true  
-    uint256 public currentSupply;           // 可以售卖的tokens数量  
-    uint256 public tokenRaised = 0;         // 总的售卖数量token  
-    uint256 public tokenMigrated = 0;     // 总的已经交易的 token  
-    uint256 public tokenExchangeRate = 5000;             // 5000 HNA 兑换 1 ETH (约为1 HNA=0.1 ETH)
-
-    // 账户是否被冻结
-    mapping (address => bool) public frozenAccount;
-    event FrozenFunds(address target, bool frozen);
-
-    // 转换
+    // Convert
     function formatDecimals(uint256 _value) internal returns (uint256 ) {
         return _value * 10 ** decimals;
     } 
 
-    // 合约构造函数，设置名称，发行总量，出售量
+    // Contract constructor, setting name, total release, sales volume
     function HNA() public {
         setName("Honour Network Access Token");
 
-        ethFundDeposit = msg.sender;  
-        isFunding = false;                           //控制Sale状态
         currentSupply = 35000000000000000000000000;
         uint256 totalSupply = 70000000000000000000000000;  
         mint(msg.sender, totalSupply);  
         require (currentSupply <= totalSupply); 
     }
 
-    // 冻结账户
-    function freezeAccount(address target) auth {
-        frozenAccount[target] = true;
-        FrozenFunds(target, true);
-    }
-
-    // 解冻账户
-    function defreezeAccount(address target) auth {
-        frozenAccount[target] = false;
-        FrozenFunds(target, false);
-    }
-
-    // 判断账户是否被冻结
-    modifier isFrozen { 
-        require (!frozenAccount[msg.sender]);
-        _; 
-    }
-
-    // 如果代币被Buy，则减少供应量
+    // Reduce the supply, If the token is bought
     function subCurrentSupply (uint256 _haveArised) public {
         tokenRaised = safeAdd(tokenRaised, _haveArised);
         currentSupply = safeSub(currentSupply, _haveArised);
     }
     
-    // 如果代币被Sell，则增加供应量
+    // Increase the supply, if the token is sold
     function addCurrentSupply (uint256 _haveDearised) public {
         tokenRaised = safeSub(tokenRaised, _haveDearised);
         currentSupply = safeAdd(currentSupply, _haveDearised);
     }
     
-    /// @dev 判断地址是不是合约地址
-    /// @return True 如果`_addr`是一个合约
-    //  extcodesize操作码返回地址上代码的大小。如果大于零，则地址是合约。需要在合约中编写汇编代码来访问此操作
+    //  extcodesize: returns the size of the address. If greater than zero, the address is a contract. 
+    // Need to write assembly code in the contract to access this operation
+    // Determine if the addr is a contract address
+    // return: True if `_addr` is a contract
     function isContract(address _addr) constant internal returns(bool) {
         uint size;
         if (_addr == 0) return false;
@@ -94,7 +62,7 @@ contract HNA is HNAToken("HNA"), ERC223, Controlled {
         success = super.transferFrom(_from, _to, _amount);
 
         if (success && isContract(_to)) {
-            // 向后兼容ERC20
+            // Backward compatible ERC20
             if(!_to.call(bytes4(keccak256("tokenFallback(address,uint256)")), _from, _amount)) {
                 ReceivingContractTokenFallbackFailed(_from, _to, _amount);
             }
@@ -159,7 +127,7 @@ contract HNA is HNAToken("HNA"), ERC223, Controlled {
         return transferFrom(msg.sender, _to, _amount, _data, _custom_fallback);
     }
 
-    // 给地址_spender许可量_amount
+    // give _spender approve _amount
     function approve(address _spender, uint256 _amount) public returns (bool success) {
         // Alerts the token controller of the approve function call
         if (isContract(controller)) {
@@ -169,19 +137,19 @@ contract HNA is HNAToken("HNA"), ERC223, Controlled {
         return super.approve(_spender, _amount);
     }
 
-    // 产生代币
+    // Generate tokens
     function mint(address _guy, uint _wad) auth stoppable public {
         super.mint(_guy, _wad);
         Transfer(0, _guy, _wad);
     }
 
-    // 烧毁代币
+    // burn tokens
     function burn(address _guy, uint _wad) auth stoppable public {
         super.burn(_guy, _wad);
         Transfer(_guy, 0, _wad);
     }
 
-    // 给地址_spender许可量_amount
+    // give _spender approve _amount
     function approveAndCall(address _spender, uint256 _amount, bytes _extraData) public returns (bool success) {
         require (approve(_spender, _amount));
 
@@ -195,62 +163,12 @@ contract HNA is HNAToken("HNA"), ERC223, Controlled {
         return true;
     }
 
-    /// 购买token  
-    function buy() payable { 
-        require (isFunding);
-        require (msg.value > 0);
-
-        uint256 tokens = safeMul(msg.value, tokenExchangeRate);       
-        require (safeAdd(tokens, tokenRaised) <= currentSupply); 
-        subCurrentSupply(tokens);
-        _balances[msg.sender] = safeAdd(_balances[msg.sender], tokens);
-        ethFundDeposit.send(this.balance);
-    }
-    
-    // 出售token，即用token换回ether
-    function sell(uint amount) isFrozen returns (uint revenue){
-        // checks if the sender has enough to sell
-        transfer(this,amount);
-
-        // TODO:这里除法可能有问题
-        revenue = amount/ tokenExchangeRate;
-        // amount是用户数输入的出售代币的数量
-        msg.sender.send(revenue);
-        // 用户获得因为输出代币得到的以太币
-        addCurrentSupply(amount);
-    }
-
-    // 合约受益取回以太坊
-    function drawbackETH() auth {
-        ethFundDeposit.send(this.balance);
-    }
-
-
-    // 开始出售代币
-    function startFunding () auth external {  
-        require (!isFunding); 
-        isFunding = true;  
-    }
-
-    ///  停止出售代币
-    function stopFunding() auth external {  
-        require (isFunding);
-        isFunding = false;  
-    }
-    
-    ///  设置token汇率  
-    function setTokenExchangeRate(uint256 _tokenExchangeRate) auth external {  
-        require(_tokenExchangeRate > 0); 
-        require(_tokenExchangeRate != tokenExchangeRate);  
-        tokenExchangeRate = _tokenExchangeRate;  
-    } 
-
 //////////
 // Safety Methods
 //////////
 
-    /// @notice 将错误发送的token提取到合约中
-    ///  set to 0 如果想取回ether.
+    /// @notice Extracting the wrongly sent token back into the contract
+    ///  set to 0 if want to get ether.
     function claimTokens(address _token) onlyController public {
         if (_token == 0x0) {
             controller.transfer(this.balance);

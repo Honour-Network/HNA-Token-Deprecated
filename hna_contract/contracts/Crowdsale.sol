@@ -3,17 +3,19 @@ pragma solidity ^0.4.17;
 
 import "./HNA.sol";
 
-//代币HNA的合约创建（部署）之后，如果需要融资，则部署这个合约，其构造函数的第5个参数是HNA合约的地址，可以操作该合约的代币转移
-// 可以设置募资期限，目标资金，兑换ether的价格，受益人，锁定时间。募资结束后，如果达到了目标，则钱给受益人，如果没有，则返回给投资者
-// 如果有多次募资，可以多次部署这个智能合约，这样每次都不同
+// After contract creation (deployment) of  HNAtoken, if financing is required, the contract is deployed.
+// The fifth parameter of the constructor is the address of the HNA contract, which can be used to manipulate the token transfer.
+// You can set fundraising deadlines, target funds, exchange ether prices, beneficiaries, lockout time.
+// After the fund-raising is over, if the target is reached, the money is given to the beneficiary, if not, it is returned to the investor.
+// If you have multiple fundraising, you can deploy this smart contract multiple times
 
 contract Crowdsale {
     address public beneficiary;
-    uint public fundingGoal;
-    uint public amountRaised;
-    uint public deadline; // 募资结束时间
-    uint public lockline; // 募资结束后token锁定时间
-    uint public price;
+    uint256 public fundingGoal;
+    uint256 public amountRaised;
+    uint256 public deadline; // Fundraising end time
+    uint256 public lockline; // Token locking time after fundraising
+    uint256 public price;
     HNA public tokenReward;
     mapping(address => uint256) public balanceOf;
     mapping(address => uint256) public balanceOftoken;
@@ -21,21 +23,21 @@ contract Crowdsale {
     bool crowdsaleClosed = false;
     bool unlocked = false;
 
-    event GoalReached(address recipient, uint totalAmountRaised);
-    event FundTransfer(address backer, uint amount, bool isContribution);
+    event GoalReached(address recipient, uint256 totalAmountRaised);
+    event FundTransfer(address backer, uint256 amount, bool isContribution);
 
     /**
      * Constructor function
-     * 设置受益人，目标ether，募资时间，价格，锁定时间，募资的代币合约地址
+     * Set beneficiary, target ether, fundraising time, price, lockout time, fundraising token contract address
      */
     function Crowdsale(
         address ifSuccessfulSendTo,
-        uint fundingGoalInEthers,
-        uint durationInMinutes,
-        uint etherCostOfEachToken,
-        uint lockedInMinutes,
+        uint256 fundingGoalInEthers,
+        uint256 durationInMinutes,
+        uint256 etherCostOfEachToken,
+        uint256 lockedInMinutes,
         address addressOfTokenUsedAsReward
-    ) {
+    ) public {
         beneficiary = ifSuccessfulSendTo;
         fundingGoal = fundingGoalInEthers * 1 ether;
         deadline = now + durationInMinutes * 1 minutes;
@@ -46,35 +48,35 @@ contract Crowdsale {
 
     /**
      * Fallback function
-     * 当有人向智能合约发送资金时都会调用的默认函数
+     * The default function that is called when someone sends ether to the contract
      */
-    function () payable {
+    function () payable public {
         require(!crowdsaleClosed);
-        uint amount = msg.value;
-        balanceOf[msg.sender] += amount; //充钱（ether）的地址，有ether余额
+        uint256 amount = msg.value;
+        balanceOf[msg.sender] += amount; // Address for ether, with ether balance
         amountRaised += amount;
-        // tokenReward.transfer(msg.sender, amount / price); // 根据充入的ether，发放HNA代币
-        balanceOftoken[msg.sender] += amount / price; // 先将代币余额记录下来，等募集资金结束后，再发放代币，从而实现锁定
+        balanceOftoken[msg.sender] += amount / price; 
+        // Record the balance of the token first, and after the end of the raised funds, issue tokens to lock
         tokenReward.subCurrentSupply(balanceOftoken[msg.sender]);
         FundTransfer(msg.sender, amount, true);
     }
 
-    // 募集期是否结束
+    // Whether the raise period is over
     modifier afterDeadline() {
         require (now >= deadline);
         _; 
     }
 
-    // 锁定期是否结束
+    // Whether the lock period is over
     modifier afterLockline() { 
         require (now >= lockline); 
         _; 
     }
 
     /**
-     * 检查目标是否达到（或者到期），停止募资
+     * Check whether the target is reached (or expires) and stop fundraising
      */
-    function checkGoalReached() afterDeadline {
+    function checkGoalReached() public afterDeadline {
         if (amountRaised >= fundingGoal){
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
@@ -82,19 +84,19 @@ contract Crowdsale {
         crowdsaleClosed = true;
     }
 
-    // 更新锁定状态
-    function checkLocked() afterLockline {
+    // Update lock status
+    function checkLocked() public afterLockline {
         unlocked = true;
     }
 
     /**
      * Withdraw the funds
-     *   检查是否已达到募资目标或时间限制，如果并达到资金目标，则将全部ether发送给受益人（一般为募资人）。 
-     *   如果没有达到目标，每个投资者都可以撤回他们的ether。
+     * Check whether the fund-raising goal or time limit is reached, and if it meets the fund target, send all ethers to beneficiaries (usually fund raisers).
+     * If the goal is not reached, each investor can withdraw their ether.
      */
-    function safeWithdrawal() afterDeadline {
+    function safeWithdrawal() public afterDeadline {
         if (!fundingGoalReached) {
-            uint amount = balanceOf[msg.sender];
+            uint256 amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
             if (amount > 0) {
                 if (msg.sender.send(amount)) {
@@ -111,9 +113,6 @@ contract Crowdsale {
             if (beneficiary == msg.sender){
                 if (beneficiary.send(amountRaised)) {
                     FundTransfer(beneficiary, amountRaised, false);
-                // } else {
-                //     //如果未能将资金发送给受益人，解锁资助方的余额，此时已经到期，所以投资人可以撤回资金
-                //     fundingGoalReached = false;
                 }
             }
         }

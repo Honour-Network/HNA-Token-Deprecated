@@ -1,6 +1,5 @@
 pragma solidity ^0.4.17;
 
-// 与auth类似的
 contract Controlled {
     /// @notice The address of the controller is the only address that can call
     ///  a function with this modifier
