@@ -1,4 +1,4 @@
-abi =[
+abi = [
     {
       "constant": true,
       "inputs": [
@@ -209,6 +209,15 @@ abi =[
       ],
       "name": "FundTransfer",
       "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "buy",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
     },
     {
       "constant": false,

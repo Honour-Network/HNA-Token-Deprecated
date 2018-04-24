@@ -10,7 +10,8 @@
 
 	<!-- <script type="./BigInteger.min.js"></script> -->
 
-	<script src="./web3.min.js"></script>
+	<!-- <script src="./web3.min.js"></script> -->
+	<script src="./web3.js"></script>
 
 </head>
 <body>
@@ -24,6 +25,25 @@
 
 	<script src="./abi_hna.js"></script>
 
+	<input id="clickMe" type="button" value="0-Initial User" onclick="getUser();" />
+
+	<input id="initConstract" type="button" value="1-Init Constract" onclick="initConstract();" />
+
+	<input id="testTransfer" type="button" value="testTransfer" onclick="testTransfer();" />
+
+	<input id="testTransferFrom" type="button" value="testTransferFrom" onclick="testTransferFrom();" />
+
+	<input id="testTransferFromApprove" type="button" value="testTransferFromApprove" onclick="testTransferFromApprove();" />
+
+	<input id="testMintBurn" type="button" value="testMintBurn" onclick="testMintBurn();" />
+
+	<input id="testPullPushMove" type="button" value="testPullPushMove" onclick="testPullPushMove();" />
+
+	<input id="testBalanceOfUser" type="button" value="testBalanceOfUser" onclick="testBalanceOfUser();" />
+
+	<input id="testSupply" type="button" value="testSupply" onclick="testSupply();" />
+
+
 	<script>
 		if (typeof web3 !== 'undefined'){
 			console.log('Web3 found');
@@ -32,14 +52,154 @@
 			web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
 		}
 
-		web3.eth.defaultAccount = web3.eth.accounts[0];
-		owner = web3.eth.accounts[0];
-		user1 = web3.eth.accounts[1];
-		user2 = web3.eth.accounts[2];
+		allAccounts=[];
+		web3.eth.getAccounts(function(error,data){for (x in data){allAccounts.push(data[x]);}});
 
-		var HNA = web3.eth.contract(abi);
-		var hna = HNA.at('0x8f0483125fcb9aaaefa9209d8e9d7b9c8b9fb90f');
-		console.log(hna);
+		async function getUser(){
+			owner = await allAccounts[0];
+			user1 = await allAccounts[1];
+			user2 = await allAccounts[2];
+			await console.log('owner:'+owner);
+			await console.log('user1:'+user2);
+			await console.log('user2:'+user2);
+		}
+
+		async function initConstract(){
+			contract1 = await new web3.eth.Contract(abi, '0x4e59fb9324237c4af776bbe8feedbe7c6c2aa1d4', {from: owner});
+			await console.log(contract1);
+			contract2 = await new web3.eth.Contract(abi, '0x0906a15b35e5620d0418184c87aa0f14a207f216', {from: owner});
+		}
+
+		async function testBalanceOfUser(){
+			bofowner = await contract1.methods.balanceOf(owner).call();
+			bofuser1 = await contract1.methods.balanceOf(user1).call();
+			bofuser2 = await contract1.methods.balanceOf(user2).call();
+			await console.log('balance of owner:'+ bofowner);
+			await console.log('balance of user1:'+ bofuser1);
+			await console.log('balance of user2:'+ bofuser2);
+		}
+
+		async function testSupply(){
+			totalS = await contract1.methods.totalSupply().call();
+			await console.log('totalSupply:'+ totalS);		
+		}
+
+		async function testTransfer(){
+			await console.log('Test transfer function with 2 parameters: transfer 10001 token from owner to user1');
+			await contract1.methods.transfer(user1, 10001).send({from:owner}).then(console.log);
+			await testBalanceOfUser();
+
+			await console.log('Test transfer function with 3 parameters: transfer 10001 token from owner to user2');
+			await contract1.methods.transfer(user2, 10001, web3.utils.asciiToHex('1')).send({from:owner}).then(console.log);
+			await testBalanceOfUser();
+
+			await console.log('Test transfer function with 4 parameters: transfer 10001 token from user1 to user2');
+			await contract1.methods.transfer(user2, 10001, web3.utils.asciiToHex('1'), "2").send({from:user1}).then(console.log);
+			await testBalanceOfUser();
+		}
+
+		async function testTransferFrom(){
+			await console.log('Test transferFrom function with 3 parameters: transfer 10001 token from owner to user1, called by owner');
+			await contract1.methods.transferFrom(owner, user1, 10001).send({from:owner}).then(console.log);
+			await testBalanceOfUser();
+
+			await console.log('Test transferFrom function with 4 parameters: transfer 10001 token from owner to user2, called by owner');
+			await contract1.methods.transferFrom(owner, user2, 10001, web3.utils.asciiToHex('1')).send({from:owner}).then(console.log);
+			await testBalanceOfUser();
+
+			await console.log('Test transferFrom function with 5 parameters: transfer 10001 token from user1 to user2, called by user1');
+			await contract1.methods.transferFrom(user1, user2, 10001, web3.utils.asciiToHex('1'), "2").send({from:user1}).then(console.log);
+			await testBalanceOfUser();
+		}
+
+		async function testTransferFromApprove(){
+			await console.log('Test transferFrom function with 3 parameters: transfer 10001 token from owner to user1, called by user1 with allowance, success');
+			await contract1.methods.approve(user1, 10001).send({from:owner}).then(console.log);
+			await contract1.methods.transferFrom(owner, user1, 10001).send({from:user1}).then(console.log);
+			await testBalanceOfUser();
+
+			await console.log('Test transferFrom function with 3 parameters: transfer 10001 token from owner to user1, called by user1 without allowance,failed');
+			await contract1.methods.transferFrom(owner, user1, 10001).send({from:user1}).then(console.log);
+			await testBalanceOfUser();
+
+			await console.log('Test transferFrom function with 3 parameters: transfer 10001 token from user1 to user2, called by user2 without allowance, failed');
+			await contract1.methods.transferFrom(user1, user2, 10001).send({from:user2}).then(console.log);
+			await testBalanceOfUser();
+		}
+
+		async function testMintBurn(){
+			await console.log('Test mint, default, to owner');
+			await contract1.methods.mint(9999999).send({from:owner}).then(console.log)
+			await testBalanceOfUser();
+			await testSupply();
+
+			await console.log('Test mint, to user1');
+			await contract1.methods.mint(user1, 9999999).send({from:owner}).then(console.log)
+			await testBalanceOfUser();
+			await testSupply();
+
+			await console.log('Test burn, default, to owner');
+			await contract1.methods.burn(9999999).send({from:owner}).then(console.log)
+			await testBalanceOfUser();
+			await testSupply();
+
+			await console.log('Test burn, from user1,called by owner, with allowance(Absolute authority), success');
+			await contract1.methods.approve(owner).send({from:user1}).then(console.log);
+			await contract1.methods.burn(user1, 999999).send({from:owner}).then(console.log);
+			await testBalanceOfUser();
+			await testSupply();	
+
+			await console.log('Test burn, from user1,called by owner, without allowance, fialed');
+			await contract1.methods.approve(owner,1).send({from:user1}).then(console.log);
+			await contract1.methods.burn(user1, 999999).send({from:owner}).then(console.log)
+			await testBalanceOfUser();
+			await testSupply();	
+
+			await console.log('Test mint, to user1, called by user1, failed');
+			await contract1.methods.mint(user1, 999999).send({from:user1}).then(console.log)
+			await testBalanceOfUser();
+		}
+
+
+		async function testPullPushMove(){
+			await contract1.methods.approve(owner,10001).send({from:user1}).then(console.log);
+			await contract1.methods.pull(user1,10001).send({from:owner}).then(console.log);
+			await testBalanceOfUser();
+
+			// no allowance, fialed 
+			// await contract1.methods.pull(user2,10001).send({from:owner}).then(console.log);
+			// await testBalanceOfUser();
+
+			await contract1.methods.push(user1,10001).send({from:owner}).then(console.log);
+			await testBalanceOfUser();
+
+			await contract1.methods.move(owner, user1, 10001).send({from:owner}).then(console.log);
+			await testBalanceOfUser();
+		}
+
+
+		async function testClaimToken(){
+
+		}
+
+
+		// web3.eth.defaultAccount = web3.eth.accounts.create();
+		// owner = web3.eth.accounts[0];
+		// user1 = web3.eth.accounts[1];
+		// user2 = web3.eth.accounts[2];
+		// owner = web3.eth.accounts.create();
+		// user1 = web3.eth.accounts.create();
+		// const get3rdAccount = async () => {
+		//   const accounts = await web3.eth.getAccounts()
+		//   return accounts[3]
+		// }
+
+
+
+
+		// var HNA = web3.eth.contract(abi);
+		// var hna = HNA.at('0x13274fe19c0178208bcbee397af8167a7be27f6f');
+		// console.log(hna);
 		// hna.startFunding();
 
 

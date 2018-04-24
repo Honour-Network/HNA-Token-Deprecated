@@ -1,4 +1,4 @@
-abi = [
+abi =[
     {
       "constant": true,
       "inputs": [],
@@ -40,20 +40,6 @@ abi = [
       "constant": true,
       "inputs": [],
       "name": "totalSupply",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "tokenRaised",
       "outputs": [
         {
           "name": "",
@@ -133,20 +119,6 @@ abi = [
         {
           "name": "",
           "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "currentSupply",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
         }
       ],
       "payable": false,
@@ -510,34 +482,6 @@ abi = [
       "constant": false,
       "inputs": [
         {
-          "name": "_haveArised",
-          "type": "uint256"
-        }
-      ],
-      "name": "subCurrentSupply",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_haveDearised",
-          "type": "uint256"
-        }
-      ],
-      "name": "addCurrentSupply",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
           "name": "_from",
           "type": "address"
         },
@@ -548,6 +492,10 @@ abi = [
         {
           "name": "_amount",
           "type": "uint256"
+        },
+        {
+          "name": "_data",
+          "type": "bytes"
         }
       ],
       "name": "transferFrom",
@@ -610,71 +558,9 @@ abi = [
         {
           "name": "_amount",
           "type": "uint256"
-        },
-        {
-          "name": "_data",
-          "type": "bytes"
         }
       ],
       "name": "transferFrom",
-      "outputs": [
-        {
-          "name": "success",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "name": "_amount",
-          "type": "uint256"
-        },
-        {
-          "name": "_data",
-          "type": "bytes"
-        },
-        {
-          "name": "_custom_fallback",
-          "type": "string"
-        }
-      ],
-      "name": "transfer",
-      "outputs": [
-        {
-          "name": "success",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "name": "_amount",
-          "type": "uint256"
-        },
-        {
-          "name": "_data",
-          "type": "bytes"
-        }
-      ],
-      "name": "transfer",
       "outputs": [
         {
           "name": "success",
@@ -712,15 +598,50 @@ abi = [
       "constant": false,
       "inputs": [
         {
-          "name": "_spender",
+          "name": "_to",
           "type": "address"
         },
         {
           "name": "_amount",
           "type": "uint256"
+        },
+        {
+          "name": "_data",
+          "type": "bytes"
         }
       ],
-      "name": "approve",
+      "name": "transfer",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "name": "_data",
+          "type": "bytes"
+        },
+        {
+          "name": "_custom_fallback",
+          "type": "string"
+        }
+      ],
+      "name": "transfer",
       "outputs": [
         {
           "name": "success",
@@ -754,11 +675,30 @@ abi = [
       "constant": false,
       "inputs": [
         {
-          "name": "_guy",
+          "name": "_spender",
           "type": "address"
         },
         {
-          "name": "_wad",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "wad",
           "type": "uint256"
         }
       ],
@@ -772,7 +712,11 @@ abi = [
       "constant": false,
       "inputs": [
         {
-          "name": "wad",
+          "name": "_guy",
+          "type": "address"
+        },
+        {
+          "name": "_wad",
           "type": "uint256"
         }
       ],

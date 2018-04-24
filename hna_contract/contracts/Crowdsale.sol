@@ -1,6 +1,7 @@
 
 pragma solidity ^0.4.17;
 
+import "./lib/math.sol";
 import "./HNA.sol";
 
 // After contract creation (deployment) of  HNAtoken, if financing is required, the contract is deployed.
@@ -9,7 +10,7 @@ import "./HNA.sol";
 // After the fund-raising is over, if the target is reached, the money is given to the beneficiary, if not, it is returned to the investor.
 // If you have multiple fundraising, you can deploy this smart contract multiple times
 
-contract Crowdsale {
+contract Crowdsale is DSMath{
     address public beneficiary;
     uint256 public fundingGoal;
     uint256 public amountRaised;
@@ -34,7 +35,7 @@ contract Crowdsale {
         address ifSuccessfulSendTo,
         uint256 fundingGoalInEthers,
         uint256 durationInMinutes,
-        uint256 etherCostOfEachToken,
+        uint256 weiCostOfEachToken,
         uint256 lockedInMinutes,
         address addressOfTokenUsedAsReward
     ) public {
@@ -42,7 +43,7 @@ contract Crowdsale {
         fundingGoal = fundingGoalInEthers * 1 ether;
         deadline = now + durationInMinutes * 1 minutes;
         lockline = deadline + lockedInMinutes  * 1 minutes;
-        price = etherCostOfEachToken * 1 ether;
+        price = weiCostOfEachToken;
         tokenReward = HNA(addressOfTokenUsedAsReward);
     }
 
@@ -53,18 +54,33 @@ contract Crowdsale {
     function () payable public {
         require(!crowdsaleClosed);
         uint256 amount = msg.value;
-        balanceOf[msg.sender] += amount; // Address for ether, with ether balance
-        amountRaised += amount;
-        balanceOftoken[msg.sender] += amount / price; 
+        balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender], amount); // Address for ether, with ether balance
+        amountRaised = safeAdd(amountRaised, amount);
+        balanceOftoken[msg.sender] = safeAdd(balanceOftoken[msg.sender], amount / price* 1 ether); 
         // Record the balance of the token first, and after the end of the raised funds, issue tokens to lock
-        tokenReward.subCurrentSupply(balanceOftoken[msg.sender]);
+        // tokenReward.subCurrentSupply(balanceOftoken[msg.sender]);
+        FundTransfer(msg.sender, amount, true);
+    }
+
+    /**
+     * Fallback function
+     * The default function that is called when someone sends ether to the contract
+     */
+    function buy() payable public {
+        require(!crowdsaleClosed);
+        uint256 amount = msg.value;
+        balanceOf[msg.sender] = safeAdd(balanceOf[msg.sender], amount); // Address for ether, with ether balance
+        amountRaised = safeAdd(amountRaised, amount);
+        balanceOftoken[msg.sender] = safeAdd(balanceOftoken[msg.sender], amount / price* 1 ether); 
+        // Record the balance of the token first, and after the end of the raised funds, issue tokens to lock
+        // tokenReward.subCurrentSupply(balanceOftoken[msg.sender]);
         FundTransfer(msg.sender, amount, true);
     }
 
     // Whether the raise period is over
     modifier afterDeadline() {
         require (now >= deadline);
-        _; 
+        _;
     }
 
     // Whether the lock period is over
@@ -100,7 +116,7 @@ contract Crowdsale {
             balanceOf[msg.sender] = 0;
             if (amount > 0) {
                 if (msg.sender.send(amount)) {
-                    tokenReward.addCurrentSupply(amount);
+                    // tokenReward.addCurrentSupply(amount);
                     FundTransfer(msg.sender, amount, false);
                 } else {
                     balanceOf[msg.sender] = amount;

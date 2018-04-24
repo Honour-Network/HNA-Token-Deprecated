@@ -1,42 +1,22 @@
 pragma solidity ^0.4.17;
 
-import "./HNA-token/token.sol";
+import "./lib/token.sol";
 import './ERC223ReceivingContract.sol';
 import './TokenController.sol';
 import './Controlled.sol';
 import './ApproveAndCallFallBack.sol';
 import './ERC223.sol';
 
-contract HNA is HNAToken("HNA"), ERC223, Controlled {
+contract HNA is DSToken("HNA"), ERC223, Controlled {
 
-    uint256 public currentSupply;           // The number of tokens that can be sold
-    uint256 public tokenRaised = 0;         // The number of tokens have been sold
-
-    // Convert
-    function formatDecimals(uint256 _value) internal returns (uint256 ) {
-        return _value * 10 ** decimals;
-    } 
+    uint256 public totalSupply;           // The number of tokens that can be sold
 
     // Contract constructor, setting name, total release, sales volume
     function HNA() public {
         setName("Honour Network Access Token");
 
-        currentSupply = 35000000000000000000000000;
-        uint256 totalSupply = 70000000000000000000000000;  
+        totalSupply = 700000000 ether;
         mint(msg.sender, totalSupply);  
-        require (currentSupply <= totalSupply); 
-    }
-
-    // Reduce the supply, If the token is bought
-    function subCurrentSupply (uint256 _haveArised) public {
-        tokenRaised = safeAdd(tokenRaised, _haveArised);
-        currentSupply = safeSub(currentSupply, _haveArised);
-    }
-    
-    // Increase the supply, if the token is sold
-    function addCurrentSupply (uint256 _haveDearised) public {
-        tokenRaised = safeSub(tokenRaised, _haveDearised);
-        currentSupply = safeAdd(currentSupply, _haveDearised);
     }
     
     //  extcodesize: returns the size of the address. If greater than zero, the address is a contract. 
@@ -44,7 +24,7 @@ contract HNA is HNAToken("HNA"), ERC223, Controlled {
     // Determine if the addr is a contract address
     // return: True if `_addr` is a contract
     function isContract(address _addr) constant internal returns(bool) {
-        uint size;
+        uint256 size;
         if (_addr == 0) return false;
         assembly {
             size := extcodesize(_addr)
@@ -123,7 +103,7 @@ contract HNA is HNAToken("HNA"), ERC223, Controlled {
      * ERC 223
      * Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      */
-    function transfer(address _to, uint _amount, bytes _data, string _custom_fallback) public returns (bool success) {
+    function transfer(address _to, uint256 _amount, bytes _data, string _custom_fallback) public returns (bool success) {
         return transferFrom(msg.sender, _to, _amount, _data, _custom_fallback);
     }
 
@@ -138,13 +118,13 @@ contract HNA is HNAToken("HNA"), ERC223, Controlled {
     }
 
     // Generate tokens
-    function mint(address _guy, uint _wad) auth stoppable public {
+    function mint(address _guy, uint256 _wad) auth stoppable public {
         super.mint(_guy, _wad);
         Transfer(0, _guy, _wad);
     }
 
     // burn tokens
-    function burn(address _guy, uint _wad) auth stoppable public {
+    function burn(address _guy, uint256 _wad) auth stoppable public {
         super.burn(_guy, _wad);
         Transfer(_guy, 0, _wad);
     }
@@ -176,10 +156,10 @@ contract HNA is HNAToken("HNA"), ERC223, Controlled {
         }
 
         ERC20 token = ERC20(_token);
-        uint balance = token.balanceOf(this);
+        uint256 balance = token.balanceOf(this);
         token.transfer(controller, balance);
         ClaimedTokens(_token, controller, balance);
     }
 
-    event ClaimedTokens(address indexed _token, address indexed _controller, uint _amount);
+    event ClaimedTokens(address indexed _token, address indexed _controller, uint256 _amount);
 }
