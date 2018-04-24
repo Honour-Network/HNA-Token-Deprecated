@@ -15,7 +15,7 @@ contract HNA is DSToken("HNA"), ERC223, Controlled {
     function HNA() public {
         setName("Honour Network Access Token");
 
-        totalSupply = 700000000 ether;
+        totalSupply = 728000000 ether;
         mint(msg.sender, totalSupply);  
     }
     

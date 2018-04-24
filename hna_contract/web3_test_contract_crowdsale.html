@@ -11,6 +11,8 @@
 	<!-- <script type="./BigInteger.min.js"></script> -->
 
 	<script src="./web3.js"></script>
+	<script src="./moment.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
 </head>
 <body>
@@ -41,8 +43,6 @@
 
 
 	</div>
-
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
 	<script src="./abi_crowdsale.js"></script>
 
@@ -111,8 +111,8 @@
 			await console.log('beneficiary:'+ beneficiary);
 			await console.log('fundingGoal:'+ fundingGoal);
 			await console.log('amountRaised:'+ amountRaised);
-			await console.log('deadline:'+ deadline);
-			await console.log('lockline:'+ lockline); // timestap to time
+			await console.log('deadline:'+ moment.unix(deadline).format("MM/DD/YYYY, h:mm:ss"));
+			await console.log('lockline:'+ moment.unix(lockline).format("MM/DD/YYYY, h:mm:ss")); // timestap to time
 			await console.log('price:'+ price);
 		}
 
