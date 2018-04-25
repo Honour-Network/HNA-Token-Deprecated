@@ -43,6 +43,8 @@
 
 	<input id="testSupply" type="button" value="testSupply" onclick="testSupply();" />
 
+	<input id="testClaimToken" type="button" value="testClaimToken" onclick="testClaimToken();" />
+
 
 	<script>
 		if (typeof web3 !== 'undefined'){
@@ -65,9 +67,9 @@
 		}
 
 		async function initConstract(){
-			contract1 = await new web3.eth.Contract(abi, '0x4e59fb9324237c4af776bbe8feedbe7c6c2aa1d4', {from: owner});
+			contract1 = await new web3.eth.Contract(abi, '0xe547baa852602c90e641d0e9d6b0d279afc09f92', {from: owner});
 			await console.log(contract1);
-			contract2 = await new web3.eth.Contract(abi, '0x0906a15b35e5620d0418184c87aa0f14a207f216', {from: owner});
+			contract2 = await new web3.eth.Contract(abi, '0xb056d4ba7cdbb230d9884700088b8c607bf0c85b', {from: owner});
 		}
 
 		async function testBalanceOfUser(){
@@ -179,6 +181,10 @@
 
 
 		async function testClaimToken(){
+			await contract1.methods.transfer(contract2._address,100001).send().then(console.log);
+			await testBalanceOfUser();
+			await contract2.methods.claimTokens(contract1._address).send().then(console.log);
+			await testBalanceOfUser();
 
 		}
 
