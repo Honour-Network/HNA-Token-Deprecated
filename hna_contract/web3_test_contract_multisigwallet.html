@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>My First Dapp</title>
+
+	<!-- <link rel="stylesheet" type="text/css" href="main.css"> -->
+
+	<!-- <script type="./BigInteger.min.js"></script> -->
+
+	<!-- <script src="./web3.min.js"></script> -->
+	<script src="./web3.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<h1>Honour NetWork Access Token</h1>
+		<h2 id="instructor">Test MultiSigWallet</h2>
+
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+	<script src="./abi_multisigwallet.js"></script>
+
+	<input id="clickMe" type="button" value="0-Initial User" onclick="getUser();" />
+
+	<input id="initConstract" type="button" value="1-Init Constract" onclick="initConstract();" />
+
+	<input id="testsubmitTx" type="button" value="testsubmitTx" onclick="testsubmitTx();" />
+
+	<input id="testgetAllTx" type="button" value="testgetAllTx" onclick="testgetAllTx();" />
+
+	<input id="testOutputNumber" type="button" value="testOutputNumber" onclick="testOutputNumber();" />
+
+	<input id="testConfirmTx" type="button" value="testConfirmTx" onclick="testConfirmTx();" />
+
+	<!-- <input id="testPullPushMove" type="button" value="testPullPushMove" onclick="testPullPushMove();" /> -->
+
+	<input id="testgetallowner" type="button" value="testgetallowner" onclick="testgetallowner();" />
+
+	<input id="removeaddowner" type="button" value="removeaddowner" onclick="removeaddowner();" />
+
+	<!-- <input id="testClaimToken" type="button" value="testClaimToken" onclick="testClaimToken();" /> -->
+
+
+	<script>
+		if (typeof web3 !== 'undefined'){
+			console.log('Web3 found');
+			web3 = new Web3(web3.currentProvider);
+		}else{
+			web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+		}
+
+		allAccounts=[];
+		web3.eth.getAccounts(function(error,data){for (x in data){allAccounts.push(data[x]);}});
+
+		async function getUser(){
+			owner = await allAccounts[0];
+			user1 = await allAccounts[1];
+			user2 = await allAccounts[2];
+			user3 = await allAccounts[3];
+			user4 = await allAccounts[4];
+			await console.log('owner:'+owner);
+			await console.log('user1:'+user1);
+			await console.log('user2:'+user2);
+			await console.log('user3:'+user3);
+			await console.log('user4:'+user4);
+		}
+
+		async function initConstract(){
+			multisigwallet = await new web3.eth.Contract(abi, '0x30753e4a8aad7f8597332e813735def5dd395028', {from: owner});
+			await console.log(multisigwallet);
+		}
+
+		async function testgetallowner(){
+			bofowner = await multisigwallet.methods.getOwners().call();
+			await console.log('owners number:\n'+ bofowner.length);
+			await console.log('owners:\n'+ bofowner);
+		}
+
+		async function testgetAllTx(){
+
+			allconfirm = await multisigwallet.methods.getConfirmations().call();
+			await console.log('confirmTx number:\n'+ allconfirm.length);
+			await console.log('confirmTx:\n'+ allconfirm);
+
+		}
+
+		async function removeaddowner(){
+			await multisigwallet.methods.removeOwner(user4).send({from:multisigwallet._address}).then(console.log);
+			// await console.log('totalSupply:'+ totalS);
+			// totalS = await multisigwallet.methods.addOwner(user4).send().then(console.log);
+		}
+
+		async function testsubmitTx(){
+			await multisigwallet.methods.submitTransaction(user1,100, web3.utils.asciiToHex('1')).send({from:owner,gas:1000000}).then(console.log);
+
+			await multisigwallet.methods.submitTransaction(user2,999, web3.utils.asciiToHex('1')).send({from:owner,gas:1000000}).then(console.log);
+		}
+
+		async function testConfirmTx(){
+			await multisigwallet.methods.confirmTransaction(0).send({from:user2,gas:1000000}).then(console.log);
+			await getConfirmTxCount(0);
+			await multisigwallet.methods.confirmTransaction(0).send({from:user1,gas:1000000}).then(console.log);
+			await getConfirmTxCount(0);
+		}
+
+		async function testOutputNumber(){
+			requiredOner = await multisigwallet.methods.required().call();
+			await console.log('requiredOner:'+ requiredOner);
+			AllTxNumber = await multisigwallet.methods.getTransactionCount(true,true).call();
+			await console.log('AllTxNumber:'+ AllTxNumber);
+			ConfirmedTxNumber = await multisigwallet.methods.getTransactionCount(false,true).call();
+			await console.log('ConfirmedTxNumber:'+ ConfirmedTxNumber);
+		}
+
+		async function getConfirmTxCount(TxId){
+			count = await multisigwallet.methods.getConfirmationCount(TxId).call();
+			await console.log('TxId:'+ TxId + ';CountNumber:'+ count);
+		}
+		// web3.eth.defaultAccount = web3.eth.accounts.create();
+		// owner = web3.eth.accounts[0];
+		// user1 = web3.eth.accounts[1];
+		// user2 = web3.eth.accounts[2];
+		// owner = web3.eth.accounts.create();
+		// user1 = web3.eth.accounts.create();
+		// const get3rdAccount = async () => {
+		//   const accounts = await web3.eth.getAccounts()
+		//   return accounts[3]
+		// }
+
+
+
+
+		// var HNA = web3.eth.contract(abi);
+		// var hna = HNA.at('0x13274fe19c0178208bcbee397af8167a7be27f6f');
+		// console.log(hna);
+		// hna.startFunding();
+
+
+	</script>
+</body>
+</html>
