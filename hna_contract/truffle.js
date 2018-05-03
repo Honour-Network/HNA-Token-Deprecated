@@ -1,7 +1,7 @@
 var HDWalletProvider = require("truffle-hdwallet-provider");
 
-
-var mnemonic = "timber festival vivid nothing guide dismiss woman drastic rubber blame kitchen purchase";
+const myModule = require('./mnemonic');
+let mnemonic = myModule.mnemonic(); 
 
 // new HDWalletProvider(mnemonic, "https://ropsten.infura.io/<Infura_Access_Token>", 2);
 

@@ -1,5 +1,4 @@
 /// base.sol -- basic ERC20 implementation
-
 pragma solidity ^0.4.17;
 
 import "./erc20.sol";

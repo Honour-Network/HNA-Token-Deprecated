@@ -49,7 +49,7 @@ contract HNA is DSToken("HNA"), ERC223, Controlled {
      * ERC 223
      * Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
      */
-    function transferFrom(address _from, address _to, uint256 _amount, bytes _data) public returns (bool success){
+    function transferFrom(address _from, address _to, uint256 _amount, bytes _data) public returns (bool success) {
         // Alerts the token controller of the transfer
         if (isContract(controller)) {
             require (TokenController(controller).onTransfer(_from, _to, _amount));  

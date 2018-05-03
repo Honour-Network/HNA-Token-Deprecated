@@ -1,9 +1,7 @@
 /// stop.sol -- mixin for enable/disable functionality
-
 pragma solidity ^0.4.13;
 
 import "./auth.sol";
-// import "./note.sol";
 
 contract DSStop is DSAuth {
 

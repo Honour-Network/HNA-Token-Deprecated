@@ -3,11 +3,6 @@
 // ERC20 token interface
 // totalSupply, return total supply of token
 // balanceOf, return the balance of address
-// allowance,
-
-// approve,
-// transfer, transfer to user(dst) wad token
-// transferFrom,
 
 pragma solidity ^0.4.8;
 
