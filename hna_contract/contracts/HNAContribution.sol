@@ -23,7 +23,6 @@ contract HNAContribution {
     mapping(address => uint256) public balanceOf;
     mapping(address => uint256) public balanceOftoken;
     bool fundingGoalReached = false;
-    bool crowdsaleClosed = false;
     bool unlocked = false;
 
     event GoalReached(address recipient, uint256 totalAmountRaised);
@@ -54,7 +53,6 @@ contract HNAContribution {
      * The default function that is called when someone sends ether to the contract
      */
     function () payable public {
-        require(!crowdsaleClosed);
         uint256 amount = msg.value;
         balanceOf[msg.sender] = balanceOf[msg.sender].add(amount); // Address for ether, with ether balance
         amountRaised = amountRaised.add(amount);
@@ -84,7 +82,6 @@ contract HNAContribution {
             fundingGoalReached = true;
             GoalReached(beneficiary, amountRaised);
         }
-        crowdsaleClosed = true;
     }
 
     // Update lock status
