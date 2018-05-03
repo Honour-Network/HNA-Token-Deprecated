@@ -9,7 +9,6 @@ import './ERC223.sol';
 
 contract HNA is DSToken("HNA"), ERC223, Controlled {
 
-
     // Contract constructor, setting name, total release, sales volume
     function HNA() public {
         setName("Honour Network Access Token");
