@@ -3,10 +3,13 @@
 pragma solidity ^0.4.17;
 
 import "./erc20.sol";
-import "./math.sol";
+import "./SafeMath.sol";
 
 //token based on erc20
-contract DSTokenBase is ERC20, DSMath {
+contract DSTokenBase is ERC20 {
+
+    using SafeMath for uint256;
+
     // total supply of token
     uint256                                            _supply;
     // balance of each address (account)
@@ -43,11 +46,11 @@ contract DSTokenBase is ERC20, DSMath {
     // tranfer wad token from user(src) to another user(dst), caller needs approve from user(src)
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
         if (src != msg.sender) {
-            _approvals[src][msg.sender] = safeSub(_approvals[src][msg.sender], wad);
+            _approvals[src][msg.sender] = _approvals[src][msg.sender].sub(wad);
         }
 
-        _balances[src] = safeSub(_balances[src], wad);
-        _balances[dst] = safeAdd(_balances[dst], wad);
+        _balances[src] = _balances[src].sub(wad);
+        _balances[dst] = _balances[dst].add(wad);
 
         Transfer(src, dst, wad);
 

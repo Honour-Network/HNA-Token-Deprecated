@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>My First Dapp</title>
+
+	<!-- <link rel="stylesheet" type="text/css" href="main.css"> -->
+
+	<!-- <script type="./BigInteger.min.js"></script> -->
+
+	<script src="./web3.js"></script>
+	<script src="./moment.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<h1>Honour NetWork Access Token</h1>
+		<h2 id="instructor">Test Crowdsale</h2>
+
+	</div>
+
+
+	<div class="allbutton">
+		
+		<input id="clickMe" type="button" value="0-Initial User" onclick="getUser();" />
+
+		<input id="initConstract" type="button" value="1-Init Constract" onclick="initConstract();" />
+
+		<input id="testPublicVar" type="button" value="testPublicVar" onclick="testPublicVar();" />
+
+		<input id="testCheckGoalReached" type="button" value="testCheckGoalReached" onclick="testCheckGoalReached();" />
+
+		<input id="testSafeWithdraw" type="button" value="testSafeWithdraw" onclick="testSafeWithdraw();" />
+
+		<input id="testCheckLocked" type="button" value="testCheckLocked" onclick="testCheckLocked();" />
+
+		<input id="testBuyToken" type="button" value="testBuyToken" onclick="testBuyToken();" />
+
+		<input id="testBalanceOfUser" type="button" value="testBalanceOfUser" onclick="testBalanceOfUser();" />
+
+
+	</div>
+
+	<script src="./abi_hnaContribution.js"></script>
+
+	<script>
+		if (typeof web3 !== 'undefined'){
+			console.log('Web3 found');
+			web3 = new Web3(web3.currentProvider);
+		}else{
+			web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+		}
+
+		// web3.eth.defaultAccount = web3.eth.accounts[0];
+		// owner = web3.eth.accounts[0];
+		// user1 = web3.eth.accounts[1];
+		// user2 = web3.eth.accounts[2];
+
+
+		// var Crowdsale = web3.eth.contract(abi);
+		// var hnaContribution = Crowdsale.at('0x1411cb266fced1587b0aa29e9d5a9ef3db64a9c5');
+		// console.log(hnaContribution);
+		allAccounts=[];
+		web3.eth.getAccounts(function(error,data){for (x in data){allAccounts.push(data[x]);}});
+
+
+		async function getUser(){
+			owner = await allAccounts[0];
+			user1 = await allAccounts[1];
+			user2 = await allAccounts[2];
+			await console.log('owner:'+owner);
+			await console.log('user1:'+user2);
+			await console.log('user2:'+user2);
+		}
+
+
+		async function initConstract(){
+			hnaContribution = await new web3.eth.Contract(abi, '0x2eca6fcfef74e2c8d03fbaf0ff6712314c9bd58b', {from: owner});
+			await console.log(hnaContribution);
+		}
+
+		async function testBalanceOfUser(){
+			bofowner = await hnaContribution.methods.balanceOf(owner).call();
+			bofuser1 = await hnaContribution.methods.balanceOf(user1).call();
+			bofuser2 = await hnaContribution.methods.balanceOf(user2).call();
+			await console.log('balance of owner:'+ bofowner);
+			await console.log('balance of user1:'+ bofuser1);
+			await console.log('balance of user2:'+ bofuser2);
+
+			boftokenowner = await hnaContribution.methods.balanceOftoken(owner).call();
+			boftokenuser1 = await hnaContribution.methods.balanceOftoken(user1).call();
+			boftokenuser2 = await hnaContribution.methods.balanceOftoken(user2).call();
+			await console.log('token balance of owner:'+ boftokenowner);
+			await console.log('token balance of user1:'+ boftokenuser1);
+			await console.log('token balance of user2:'+ boftokenuser2);
+
+
+		}
+
+
+		async function testPublicVar(){
+			beneficiary = await hnaContribution.methods.beneficiary().call();
+			fundingGoal = await hnaContribution.methods.fundingGoal().call();
+			amountRaised = await hnaContribution.methods.amountRaised().call();
+			deadline = await hnaContribution.methods.deadline().call();
+			lockline = await hnaContribution.methods.lockline().call();
+			price = await hnaContribution.methods.price().call();
+			await console.log('beneficiary:'+ beneficiary);
+			await console.log('fundingGoal:'+ fundingGoal);
+			await console.log('amountRaised:'+ amountRaised);
+			await console.log('deadline:'+ moment.unix(deadline).format("MM/DD/YYYY, h:mm:ss"));
+			await console.log('lockline:'+ moment.unix(lockline).format("MM/DD/YYYY, h:mm:ss")); // timestap to time
+			await console.log('price:'+ price);
+		}
+
+		async function testCheckGoalReached(){
+			hnaContribution.methods.checkGoalReached().send().then(console.log);
+		}
+
+		async function testCheckLocked(){
+			hnaContribution.methods.checkLocked().send().then(console.log);
+		}
+
+		async function testSafeWithdraw(){
+			hnaContribution.methods.safeWithdrawal().send().then(console.log);
+		}
+
+		async function testBuyToken(){
+			hnaContribution.methods.buy().send({from:user1, value:web3.utils.toWei('1', 'ether')}).then(console.log);
+			hnaContribution.methods.buy().send({from:user2, value:web3.utils.toWei('3', 'ether')}).then(console.log);
+		}
+
+	</script>
+</body>
+</html>

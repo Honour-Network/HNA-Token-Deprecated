@@ -1,6 +1,6 @@
 pragma solidity ^0.4.17;
 
-import "./SafeMath.sol";
+import "./lib/SafeMath.sol";
 import "./HNA.sol";
 
 // After contract creation (deployment) of  HNAtoken, if financing is required, the contract is deployed.

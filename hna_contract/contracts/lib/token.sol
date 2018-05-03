@@ -3,11 +3,13 @@
 pragma solidity ^0.4.17;
 
 import "./stop.sol";
-
 import "./base.sol";
+import "./SafeMath.sol";
 
 // DSToken contract, inherited basetoken contract 
 contract DSToken is DSTokenBase(0), DSStop {
+
+    using SafeMath for uint256;
 
     // token symbol,such as HNA
     bytes32  public  symbol;
@@ -37,11 +39,11 @@ contract DSToken is DSTokenBase(0), DSStop {
     // transfer from src to dst wad token, needs approve
     function transferFrom(address src, address dst, uint wad) public stoppable returns (bool) {
         if (src != msg.sender && _approvals[src][msg.sender] != uint(-1)) {
-            _approvals[src][msg.sender] = safeSub(_approvals[src][msg.sender], wad);
+            _approvals[src][msg.sender] = _approvals[src][msg.sender].sub(wad);
         }
 
-        _balances[src] = safeSub(_balances[src], wad);
-        _balances[dst] = safeAdd(_balances[dst], wad);
+        _balances[src] = _balances[src].sub(wad);
+        _balances[dst] = _balances[dst].add(wad);
 
         Transfer(src, dst, wad);
 
@@ -75,19 +77,19 @@ contract DSToken is DSTokenBase(0), DSStop {
 
     // mint wad token, and give it to guy
     function mint(address guy, uint wad) public auth stoppable {
-        _balances[guy] = safeAdd(_balances[guy], wad);
-        _supply = safeAdd(_supply, wad);
+        _balances[guy] = _balances[guy].add(wad);
+        _supply = _supply.add(wad);
         Mint(guy, wad);
     }
 
     // burn wad token from guy's account
     function burn(address guy, uint wad) public auth stoppable {
         if (guy != msg.sender && _approvals[guy][msg.sender] != uint(-1)) {
-            _approvals[guy][msg.sender] = safeSub(_approvals[guy][msg.sender], wad);
+            _approvals[guy][msg.sender] = _approvals[guy][msg.sender].sub(wad);
         }
 
-        _balances[guy] = safeSub(_balances[guy], wad);
-        _supply = safeSub(_supply, wad);
+        _balances[guy] = _balances[guy].sub(wad);
+        _supply = _supply.sub(wad);
         Burn(guy, wad);
     }
 
