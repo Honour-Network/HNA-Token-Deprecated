@@ -9,14 +9,11 @@ import './ERC223.sol';
 
 contract HNA is DSToken("HNA"), ERC223, Controlled {
 
-    // uint256 public totalSupply;           // The number of tokens that can be sold
 
     // Contract constructor, setting name, total release, sales volume
     function HNA() public {
         setName("Honour Network Access Token");
-
-        // totalSupply = 728000000 ether;
-        // mint(msg.sender, totalSupply);  
+ 
     }
     
     //  extcodesize: returns the size of the address. If greater than zero, the address is a contract. 
