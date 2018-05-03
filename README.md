@@ -20,5 +20,14 @@ In the hna_contract directory, run the command line:
 You can deploy successfully. At this time, the command line will have the address of the HNA contract and the address of the Crowdsale contract. Copy them into
 *Web3_test_contract_hna.html* and *Web3_test_contract_crowdsale.html* files, and used as the arguments for functions that are instantiated as smart contracts .at("contract address")
 
+#### 2.1 deployment methods in the main network and test network
+Need to run the following command to install dependencies:
+
+	`npm install truffle-hdwallet-provider`
+
+then can use command line to use the test network:
+
+	`truffle migrate --network kavon`
+
 ### 3. Test
 Open *Web3_test_contract_hna.html* or *Web3_test_contract_crowdsale.html* in browser, press F12 to test various functions of smart contracts in the test interface
