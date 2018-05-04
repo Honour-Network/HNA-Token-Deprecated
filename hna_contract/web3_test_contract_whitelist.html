@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>My First Dapp</title>
+
+	<!-- <link rel="stylesheet" type="text/css" href="main.css"> -->
+
+	<!-- <script type="./BigInteger.min.js"></script> -->
+
+	<script src="./web3.js"></script>
+	<script src="./moment.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<h1>Honour NetWork Access Token</h1>
+		<h2 id="instructor">Test WhiteList Sale</h2>
+
+	</div>
+
+
+	<div class="allbutton">
+		
+		<input id="clickMe" type="button" value="0-Initial User" onclick="getUser();" />
+
+		<input id="initConstract" type="button" value="1-Init Constract" onclick="initConstract();" />
+
+		<input id="testGetDay" type="button" value="testGetDay" onclick="testGetDay();" />
+
+		<input id="testPublicVar" type="button" value="testPublicVar" onclick="testPublicVar();" />
+
+		<input id="testAddRemoveUser" type="button" value="testAddRemoveUser" onclick="testAddRemoveUser();" />
+
+		<input id="testCheckLocked" type="button" value="testCheckLocked" onclick="testCheckLocked();" />
+
+		<input id="testBuyToken" type="button" value="testBuyToken" onclick="testBuyToken();" />
+
+		<input id="testBalanceOfUser" type="button" value="testBalanceOfUser" onclick="testBalanceOfUser();" />
+
+
+	</div>
+
+	<script src="./abi_whitelistsale.js"></script>
+
+	<script>
+		if (typeof web3 !== 'undefined'){
+			console.log('Web3 found');
+			web3 = new Web3(web3.currentProvider);
+		}else{
+			web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+		}
+
+		// web3.eth.defaultAccount = web3.eth.accounts[0];
+		// owner = web3.eth.accounts[0];
+		// user1 = web3.eth.accounts[1];
+		// user2 = web3.eth.accounts[2];
+
+
+		// var Crowdsale = web3.eth.contract(abi);
+		// var hna_whitelistsale = Crowdsale.at('0x1411cb266fced1587b0aa29e9d5a9ef3db64a9c5');
+		// console.log(hna_whitelistsale);
+		allAccounts=[];
+		web3.eth.getAccounts(function(error,data){for (x in data){allAccounts.push(data[x]);}});
+
+
+		async function getUser(){
+			owner = await allAccounts[0];
+			user1 = await allAccounts[1];
+			user2 = await allAccounts[2];
+			await console.log('owner:'+owner);
+			await console.log('user1:'+user2);
+			await console.log('user2:'+user2);
+		}
+
+
+		async function initConstract(){
+			hna_whitelistsale = await new web3.eth.Contract(abi, '0x75076e4fbba61f65efb41d64e45cff340b1e518a', {from: owner});
+			await console.log(hna_whitelistsale);
+		}
+
+		async function testGetDay(){
+			getday = await hna_whitelistsale.methods.getDay().call();
+			await console.log('sales day:'+ getday);
+		}
+
+
+		async function testPublicVar(){
+			receiver = await hna_whitelistsale.methods.receiver().call();
+			maxSale = await hna_whitelistsale.methods.maxSale().call();
+			whitelisted = await hna_whitelistsale.methods.whitelisted(user1).call();
+			initialTimestamp = await hna_whitelistsale.methods.initialTimestamp().call();
+			price = await hna_whitelistsale.methods.hnaPerEth().call();
+			await console.log('receiver:'+ receiver);
+			await console.log('maxSale:'+ maxSale);
+			await console.log('whitelisted:'+ whitelisted);
+			await console.log('initialTimestamp:'+ moment.unix(initialTimestamp).format("MM/DD/YYYY, h:mm:ss"));
+			await console.log('price:'+ price);
+		}
+
+		async function testAddRemoveUser(){
+			await hna_whitelistsale.methods.addUser(user1).send().then(console.log);
+			await hna_whitelistsale.methods.whitelisted(user1).call().then(console.log);
+
+			await hna_whitelistsale.methods.addUser(user2).send().then(console.log);
+			await hna_whitelistsale.methods.whitelisted(user2).call().then(console.log);
+
+			await hna_whitelistsale.methods.removeUser(user1).send().then(console.log);
+			await hna_whitelistsale.methods.whitelisted(user1).call().then(console.log);
+
+			await hna_whitelistsale.methods.removeUser(user2).send().then(console.log);
+			await hna_whitelistsale.methods.whitelisted(user2).call().then(console.log);
+
+			await hna_whitelistsale.methods.addManyUsers(allAccounts).send({gas:3000000}).then(console.log);
+			await hna_whitelistsale.methods.whitelisted(allAccounts[3]).call().then(console.log);
+
+
+		}
+
+
+		async function testSafeWithdraw(){
+			hna_whitelistsale.methods.safeWithdrawal().send().then(console.log);
+		}
+
+		async function testBuyToken(){
+			hna_whitelistsale.methods.buy().send({from:user1, value:web3.utils.toWei('1', 'ether')}).then(console.log);
+			hna_whitelistsale.methods.buy().send({from:user2, value:web3.utils.toWei('3', 'ether')}).then(console.log);
+		}
+
+	</script>
+</body>
+</html>
