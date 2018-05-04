@@ -67,9 +67,9 @@
 		}
 
 		async function initConstract(){
-			contract1 = await new web3.eth.Contract(abi, '0x3d49d1ef2ade060a33c6e6aa213513a7ee9a6241', {from: owner});
+			contract1 = await new web3.eth.Contract(abi, '0x77c3097d38585bd586b13bb5c63a2b4a4037edb3', {from: owner});
 			await console.log(contract1);
-			contract2 = await new web3.eth.Contract(abi, '0xbd2c938b9f6bfc1a66368d08cb44dc3eb2ae27be', {from: owner});
+			contract2 = await new web3.eth.Contract(abi, '0x52c71137c90df8aa60b91ab6a303cba1b48fef4f', {from: owner});
 			await contract1.methods.mint(9999999999).send({from:owner}).then(console.log)
 		}
 
