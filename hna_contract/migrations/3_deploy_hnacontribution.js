@@ -15,7 +15,8 @@ module.exports = function(deployer, network, accounts){
 
 	// Deploy A, then deploy B, passing in A's newly deployed address
 	deployer.deploy(HNA).then(function() {
-	  return deployer.deploy(HNAContribution,  userAddress, fundingGoal, durationInMinutes, weiCostOfEachToken, lockedInMinutes, HNA.address);
+	  // return deployer.deploy(HNAContribution,  userAddress, fundingGoal, durationInMinutes, weiCostOfEachToken, lockedInMinutes, HNA.address);
+	  return deployer.deploy(HNAContribution);
 	});
 
 };
