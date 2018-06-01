@@ -78,7 +78,7 @@
 
 
 		async function initConstract(){
-			hnaContribution = await new web3.eth.Contract(abi, '0x2eca6fcfef74e2c8d03fbaf0ff6712314c9bd58b', {from: owner});
+			hnaContribution = await new web3.eth.Contract(abi, '0x9fbda871d559710256a2502a2517b794b482db40', {from: owner});
 			await console.log(hnaContribution);
 		}
 
@@ -102,18 +102,18 @@
 
 
 		async function testPublicVar(){
-			beneficiary = await hnaContribution.methods.beneficiary().call();
-			fundingGoal = await hnaContribution.methods.fundingGoal().call();
-			amountRaised = await hnaContribution.methods.amountRaised().call();
-			deadline = await hnaContribution.methods.deadline().call();
-			lockline = await hnaContribution.methods.lockline().call();
-			price = await hnaContribution.methods.price().call();
-			await console.log('beneficiary:'+ beneficiary);
-			await console.log('fundingGoal:'+ fundingGoal);
-			await console.log('amountRaised:'+ amountRaised);
-			await console.log('deadline:'+ moment.unix(deadline).format("MM/DD/YYYY, h:mm:ss"));
-			await console.log('lockline:'+ moment.unix(lockline).format("MM/DD/YYYY, h:mm:ss")); // timestap to time
-			await console.log('price:'+ price);
+			destEthFoundation = await hnaContribution.methods.destEthFoundation().call();
+			totalNormalTokenTransfered = await hnaContribution.methods.totalNormalTokenTransfered().call();
+			totalNormalEtherCollected = await hnaContribution.methods.totalNormalEtherCollected().call();
+			startTime = await hnaContribution.methods.startTime().call();
+			endTime = await hnaContribution.methods.endTime().call();
+			exchangeRate = await hnaContribution.methods.exchangeRate().call();
+			await console.log('destEthFoundation:'+ destEthFoundation);
+			await console.log('totalNormalTokenTransfered:'+ totalNormalTokenTransfered);
+			await console.log('totalNormalEtherCollected:'+ totalNormalEtherCollected);
+			await console.log('startTime:'+ moment.unix(startTime).format("MM/DD/YYYY, h:mm:ss"));
+			await console.log('endTime:'+ moment.unix(endTime).format("MM/DD/YYYY, h:mm:ss")); // timestap to time
+			await console.log('exchangeRate:'+ exchangeRate);
 		}
 
 		async function testCheckGoalReached(){

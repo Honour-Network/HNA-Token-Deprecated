@@ -30,7 +30,7 @@
 
 	<input id="clickMe" type="button" value="0-Initial User" onclick="getUser();" />
 
-	<input id="initConstract" type="button" value="1-Init Constract" onclick="initConstract();" />
+	<input id="autoDeploy" type="button" value="autoDeploy" onclick="autoDeploy();" />
 
 	<input id="testTransfer" type="button" value="testTransfer" onclick="testTransfer();" />
 
@@ -67,6 +67,29 @@
 
 		allAccounts=[];
 		web3.eth.getAccounts(function(error,data){for (x in data){allAccounts.push(data[x]);}});
+
+
+		async function autoDeploy(){
+			var myContract = await new web3.eth.Contract(abi);
+
+			privateKey='20FF0E7F3725F5F5CD124DD7DF50E402A40AAAB0242CBF50453F15A100C70C0B'
+
+			await web3.eth.accounts.wallet.add("0x" + privateKey);
+
+			await myContract.deploy({
+			    data: bytecode,
+			    arguments:[]
+			})
+			.send({
+			    from: '0x16Af3451453293369705cb6970E2488aEDb49B55',
+				gas:4000000
+			}, function(error, transactionHash){}).on('error', function(error){ console.log(error) })
+			.on('transactionHash', function(transactionHash){ console.log(transactionHash) }).on('receipt', function(receipt){
+			   console.log(receipt.contractAddress) // contains the new contract address
+			})
+
+		}
+
 
 		async function getUser(){
 
