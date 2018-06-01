@@ -74,34 +74,6 @@ contract HNA is DSToken("HNA"), ERC223, Controlled {
         return transferFrom(msg.sender, _to, _amount, _data);
     }
 
-    /*
-     * ERC 223
-     * Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
-     */
-    function transferFrom(address _from, address _to, uint256 _amount, bytes _data, string _custom_fallback) public returns (bool success) {
-        // Alerts the token controller of the transfer
-        if (isContract(controller)) {
-            require (TokenController(controller).onTransfer(_from, _to, _amount));     
-        }
-
-        require(super.transferFrom(_from, _to, _amount));
-
-        if (isContract(_to)) {
-            ERC223ReceivingContract receiver = ERC223ReceivingContract(_to);
-            receiver.call.value(0)(bytes4(keccak256(_custom_fallback)), _from, _amount, _data);
-        }
-
-        ERC223Transfer(_from, _to, _amount, _data);
-        return true;
-    }
-
-    /*
-     * ERC 223
-     * Added support for the ERC 223 "tokenFallback" method in a "transfer" function with a payload.
-     */
-    function transfer(address _to, uint256 _amount, bytes _data, string _custom_fallback) public returns (bool success) {
-        return transferFrom(msg.sender, _to, _amount, _data, _custom_fallback);
-    }
 
     // give _spender approve _amount
     function approve(address _spender, uint256 _amount) public returns (bool success) {
