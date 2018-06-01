@@ -1,59 +1,26 @@
 abi = [
     {
-      "constant": true,
+      "constant": false,
       "inputs": [
         {
-          "name": "",
+          "name": "owner_",
           "type": "address"
         }
       ],
-      "name": "balanceOftoken",
+      "name": "setOwner",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "endTime",
       "outputs": [
         {
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "deadline",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "beneficiary",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "tokenReward",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
         }
       ],
       "payable": false,
@@ -68,7 +35,21 @@ abi = [
           "type": "address"
         }
       ],
-      "name": "balanceOf",
+      "name": "whiteList",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "exchangeRate",
       "outputs": [
         {
           "name": "",
@@ -82,7 +63,7 @@ abi = [
     {
       "constant": true,
       "inputs": [],
-      "name": "fundingGoal",
+      "name": "maxGasPrice",
       "outputs": [
         {
           "name": "",
@@ -96,11 +77,11 @@ abi = [
     {
       "constant": true,
       "inputs": [],
-      "name": "amountRaised",
+      "name": "destEthFoundation",
       "outputs": [
         {
           "name": "",
-          "type": "uint256"
+          "type": "address"
         }
       ],
       "payable": false,
@@ -110,11 +91,11 @@ abi = [
     {
       "constant": true,
       "inputs": [],
-      "name": "price",
+      "name": "paused",
       "outputs": [
         {
           "name": "",
-          "type": "uint256"
+          "type": "bool"
         }
       ],
       "payable": false,
@@ -124,7 +105,7 @@ abi = [
     {
       "constant": true,
       "inputs": [],
-      "name": "lockline",
+      "name": "startTime",
       "outputs": [
         {
           "name": "",
@@ -136,32 +117,105 @@ abi = [
       "type": "function"
     },
     {
+      "constant": false,
       "inputs": [
         {
-          "name": "ifSuccessfulSendTo",
-          "type": "address"
-        },
-        {
-          "name": "fundingGoalInEthers",
-          "type": "uint256"
-        },
-        {
-          "name": "durationInMinutes",
-          "type": "uint256"
-        },
-        {
-          "name": "etherCostOfEachToken",
-          "type": "uint256"
-        },
-        {
-          "name": "lockedInMinutes",
-          "type": "uint256"
-        },
-        {
-          "name": "addressOfTokenUsedAsReward",
+          "name": "authority_",
           "type": "address"
         }
       ],
+      "name": "setAuthority",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "hna",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "totalNormalTokenTransfered",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "authority",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "totalNormalEtherCollected",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "constructor"
@@ -175,72 +229,188 @@ abi = [
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
-          "name": "recipient",
+          "indexed": true,
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "_controller",
           "type": "address"
         },
         {
           "indexed": false,
-          "name": "totalAmountRaised",
+          "name": "_amount",
           "type": "uint256"
         }
       ],
-      "name": "GoalReached",
+      "name": "ClaimedTokens",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
-          "name": "backer",
+          "indexed": true,
+          "name": "_th",
           "type": "address"
         },
         {
           "indexed": false,
-          "name": "amount",
+          "name": "_amount",
           "type": "uint256"
         },
         {
           "indexed": false,
-          "name": "isContribution",
-          "type": "bool"
+          "name": "_tokens",
+          "type": "uint256"
         }
       ],
-      "name": "FundTransfer",
+      "name": "NewSale",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "authority",
+          "type": "address"
+        }
+      ],
+      "name": "LogSetAuthority",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "LogSetOwner",
       "type": "event"
     },
     {
       "constant": false,
-      "inputs": [],
-      "name": "buy",
+      "inputs": [
+        {
+          "name": "_hna",
+          "type": "address"
+        },
+        {
+          "name": "_startTime",
+          "type": "uint256"
+        },
+        {
+          "name": "_endTime",
+          "type": "uint256"
+        },
+        {
+          "name": "_destEthFoundation",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
       "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_addrList",
+          "type": "address[]"
+        },
+        {
+          "name": "alive",
+          "type": "bool"
+        }
+      ],
+      "name": "saveWhiteList",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_paused",
+          "type": "bool"
+        }
+      ],
+      "name": "savePaused",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_th",
+          "type": "address"
+        }
+      ],
+      "name": "proxyPayment",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
       "payable": true,
       "stateMutability": "payable",
       "type": "function"
     },
     {
       "constant": false,
-      "inputs": [],
-      "name": "checkGoalReached",
+      "inputs": [
+        {
+          "name": "_th",
+          "type": "address"
+        },
+        {
+          "name": "_toFund",
+          "type": "uint256"
+        }
+      ],
+      "name": "doBuy",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
-      "constant": false,
+      "constant": true,
       "inputs": [],
-      "name": "checkLocked",
-      "outputs": [],
+      "name": "time",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
       "payable": false,
-      "stateMutability": "nonpayable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
       "constant": false,
-      "inputs": [],
-      "name": "safeWithdrawal",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address"
+        }
+      ],
+      "name": "claimTokens",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
